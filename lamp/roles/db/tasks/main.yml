@@ -13,11 +13,11 @@
 - name: Install MariaDB package
   yum: 
     name: "{{ item }}" 
-    state: installed
+    state: present
   when: ansible_os_family == "Debian"
   with_items:
    - mariadb-server
-   - MySQL-python
+   - python-mysqldb
 
 - name: Configure SELinux to start mysql on any port
   seboolean: 

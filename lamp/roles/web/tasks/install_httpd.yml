@@ -39,14 +39,14 @@
 
 - name: Start firewalld
   service: 
-  name: firewalld 
+    name: firewalld 
     state: started
     enabled: yes
   when: ansible_os_family == "Redhat"
 
 - name: Start firewalld
   service: 
-  name: ufw 
+    name: ufw 
     state: started 
     enabled: yes
   when: ansible_os_family == "Debian"
@@ -57,24 +57,24 @@
     permanent: true 
     state: enabled 
     immediate: yes
+  when: ansible_os_family == "RedHat"
 
-- name: http service state
-  service: 
-    name: httpd 
-    state: started
-    enabled: yes
-    when: ansible_os_family == "RedHat"
+- name: insert firewalld rule for ufw
+  ufw: 
+    to_port: "{{ httpd_port }}/tcp"
+    state: enabled 
+  when: ansible_os_family == "Debian"
 
 - name: apache2 service state
   service: 
     name: apache2 
     state: started
     enabled: yes
-    when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian"
 
 - name: Configure SELinux to allow httpd to connect to remote database
   seboolean: 
     name: httpd_can_network_connect_db 
     state: true
-    when: ansible_os_family == "RedHat" 
     persistent: yes
+  when: ansible_os_family == "RedHat"
