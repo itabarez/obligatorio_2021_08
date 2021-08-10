@@ -10,26 +10,16 @@
 
 - name: Install ntp
   yum: 
-    name: ntp 
+    name: chrony 
     state: present
   when: ansible_os_family == "RedHat"
-  tags: ntp
+  tags: chrony
 
 - name: Install common dependencies
   yum: 
     name: "{{ item }}"
     state: installed
   when: ansible_os_family == "RedHat"
-  with_items:
-   - libselinux-python
-   - libsemanage-python
-   - firewalld
-
-- name: Install common dependencies
-  yum: 
-    name: "{{ item }}"
-    state: installed
-  when: ansible_os_family == "Debian"
   with_items:
    - libselinux-python
    - libsemanage-python
@@ -40,11 +30,29 @@
     src: ntp.conf.j2 
     dest: /etc/ntp.conf
   tags: ntp
+  when: ansible_os_family == "Debian"
   notify: restart ntp
+
+- name: Configure chronyd file
+  template: 
+    src: chrony.conf.j2 
+    dest: /etc/chrony.conf
+  tags: chronyd
+  when: ansible_os_family == "Redhat"
+  notify: restart chronyd
 
 - name: Start the ntp service
   service: 
-    name: ntpd 
+    name: ntp 
     state: started 
     enabled: yes
   tags: ntp
+  when: ansible_os_family == "Debian"
+
+- name: Start the ntp service
+  service: 
+    name: chrony 
+    state: started 
+    enabled: yes
+  tags: chrony
+  when: ansible_os_family == "Redhat"

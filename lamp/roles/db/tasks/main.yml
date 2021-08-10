@@ -24,6 +24,7 @@
     name: mysql_connect_any 
     state: true 
     persistent: yes
+    when: ansible_os_family == "RedHat"
 
 - name: Create Mysql configuration file
   template: 
