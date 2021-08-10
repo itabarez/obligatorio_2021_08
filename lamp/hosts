@@ -1,7 +1,17 @@
 [webservers]
-webserver.local
+centos ansible_host=192.168.56.104
 
 [dbservers]
-dbserver.local
+ubuntu ansible_host=192.168.56.105
+
+[centos]
+centos ansible_host=192.168.56.104
+
+[ubuntu]
+ubuntu ansible_host=192.168.56.105
+
+[linux:children]
+centos
+ubuntu
 
 
