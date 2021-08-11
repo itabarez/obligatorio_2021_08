@@ -6,3 +6,13 @@
   service: 
     name: ntpd 
     state: restarted
+
+- name: restart chronyd 
+  service:
+    name: "{{ services }}"
+    state: started
+    enabled: yes
+  become: true
+  vars:
+    services:
+    - chrony

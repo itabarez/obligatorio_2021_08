@@ -8,23 +8,22 @@
   when: ansible_os_family == "RedHat"
   with_items:
    - mariadb-server
-   - MySQL-python
 
 - name: Install MariaDB package
   yum: 
     name: "{{ item }}" 
     state: present
-  when: ansible_os_family == "Debian"
   with_items:
    - mariadb-server
-   - python-mysqldb
+   - python3-pymysql
+  when: ansible_os_family == "Debian"
 
 - name: Configure SELinux to start mysql on any port
   seboolean: 
     name: mysql_connect_any 
     state: true 
     persistent: yes
-    when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat"
 
 - name: Create Mysql configuration file
   template: 
@@ -32,6 +31,7 @@
     dest: /etc/my.cnf
   notify:
   - restart mariadb
+  when: ansible_os_family == "Debian"
 
 - name: Create MariaDB log file
   file: 
@@ -60,15 +60,30 @@
     name: firewalld 
     state: started 
     enabled: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Start firewalld
+  service: 
+    name: ufw 
+    state: started 
+    enabled: yes
+  when: ansible_os_family == "Debian"
 
 - name: insert firewalld rule
   firewalld: 
-    port: "{{ mysql_port }}/tcp"
+    port: "3306/tcp"
     permanent: true 
     state: enabled 
     immediate: yes
+  when: ansible_os_family == "RedHat"
 
-- name: Create Application Database
+- name: insert firewalld rule for ufw
+  ufw: 
+    to_port: "{{ mysql_port }}/tcp"
+    state: enabled 
+  when: ansible_os_family == "Debian"
+
+- name: create application Database
   mysql_db: 
     name: "{{ dbname }}" 
     state: present

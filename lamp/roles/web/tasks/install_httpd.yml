@@ -9,7 +9,6 @@
   with_items:
    - httpd
    - php
-   - php-mysql
 
 - name: Install web role specific dependencies
   yum: 
@@ -42,7 +41,7 @@
     name: firewalld 
     state: started
     enabled: yes
-  when: ansible_os_family == "Redhat"
+  when: ansible_os_family == "RedHat"
 
 - name: Start firewalld
   service: 

@@ -13,7 +13,7 @@
     name: chrony 
     state: present
   when: ansible_os_family == "RedHat"
-  tags: chrony
+#  tags: chrony
 
 - name: Install common dependencies
   yum: 
@@ -21,8 +21,8 @@
     state: installed
   when: ansible_os_family == "RedHat"
   with_items:
-   - libselinux-python
-   - libsemanage-python
+   - python3-libselinux
+   - python3-libsemanage
    - firewalld
 
 - name: Configure ntp file
@@ -38,7 +38,7 @@
     src: chrony.conf.j2 
     dest: /etc/chrony.conf
   tags: chronyd
-  when: ansible_os_family == "Redhat"
+  when: ansible_os_family == "RedHat"
   notify: restart chronyd
 
 - name: Start the ntp service
@@ -51,8 +51,8 @@
 
 - name: Start the ntp service
   service: 
-    name: chrony 
+    name: chronyd 
     state: started 
     enabled: yes
   tags: chrony
-  when: ansible_os_family == "Redhat"
+  when: ansible_os_family == "RedHat"
